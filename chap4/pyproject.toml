@@ -1,0 +1,16 @@
+[project]
+name = "chap4"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "google-search-results>=2.4.2",
+    "openai>=2.9.0",
+    "python-dotenv>=1.2.1",
+]
+
+
+[[tool.uv.index]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
