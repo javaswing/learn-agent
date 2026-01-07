@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@tavily/core": "^0.6.4",
+    "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "openai": "^6.15.0"
   },

@@ -4,7 +4,7 @@ export class OpenAICompletionClient{
     model: string;
     client: OpenAI;
 
-    constructor(API_KEY: string, BASE_URL: string, MODEL_ID: string) {
+    constructor(API_KEY: string, BASE_URL: string, MODEL_ID: string) {        
         this.model = MODEL_ID;
         this.client = new OpenAI({
             apiKey: API_KEY,
@@ -13,8 +13,11 @@ export class OpenAICompletionClient{
     }
 
 
-    async generate(prompt: string, systemPrompt: string){
+    async generate(prompt: string, systemPrompt: string) {
+
         try {
+            console.log(`开始调用大模型`)
+            
             const messages: OpenAI.ChatCompletionMessageParam[] = [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: prompt }

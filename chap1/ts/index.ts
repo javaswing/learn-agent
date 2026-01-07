@@ -1,10 +1,11 @@
 import * as dotenv from 'dotenv'
-import OpenAI from 'openai'
+import { OpenAICompletionClient } from './completion_client'
 import { AGENT_SYSTEM_PROMPT } from './const'
+import { get_weather } from './utils'
 
 dotenv.config()
 
-const requireEnv = (name: string) => {
+export const requireEnv = (name: string) => {
         const value = process.env[name]
         if (value === undefined || value.trim() === '') {
             throw new Error(`${name} is not set`)
@@ -13,29 +14,9 @@ const requireEnv = (name: string) => {
     }
 
 
-async function initLLMClient(API_KEY: string, BASE_URL: string, MODEL_ID: string) {
-    const client = new OpenAI({
-        apiKey: API_KEY,
-        baseURL: BASE_URL
-    })
 
-    const prompt = `你好，请帮我查询一下今天上海的天气，然后根据天气推荐一个合适的旅游景点。`
-
-    const messages: OpenAI.ChatCompletionMessageParam[] = [
-        { role: 'system', content: AGENT_SYSTEM_PROMPT },
-        { role: 'user', content: prompt }
-    ]
-
-    const response = await client.chat.completions.create(
-        {
-            model: MODEL_ID,
-            messages: messages,
-            stream: false
-        }
-    )
-
-    const answer = response.choices[0]?.message.content
-    return answer
+const available_tools = {
+    "get_weather": get_weather
 }
 
 async function main() {    
@@ -44,10 +25,26 @@ async function main() {
     const MODEL_ID = requireEnv('MODEL_ID')
     const TAVILY_API_KEY = requireEnv('TAVILY_API_KEY')
 
-    console.log(`=========初始化 OpenAI ====`)
-    await initLLMClient(API_KEY, BASE_URL, MODEL_ID)
+    console.log(`=========初始化 OpenAI ====`)    
+    const llm = await new OpenAICompletionClient(API_KEY, BASE_URL, MODEL_ID)
+
+    const prompt = `你好，请帮我查询一下今天上海的天气，然后根据天气推荐一个合适的旅游景点。`
+    const promptHistory = [`用户请求: ${prompt}`]
+
+    const maxRange = 5;
+
+    for (let index = 0; index < maxRange; index++) {
+       console.log(`循环 ${index + 1} 次`)
+
+       const fullPrompt = promptHistory.join('\n')
+
+       const output = await llm.generate(fullPrompt, AGENT_SYSTEM_PROMPT)
+
+       console.log(output)
+        
+    }
 }
 
-main()
+get_weather('上海')
 
 
