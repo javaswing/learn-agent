@@ -12,7 +12,7 @@ export const get_weather = async (city: string) => {
     const weatherDesc = currentCondition['weatherDesc'][0]['value'];
     const tempC = currentCondition['temp_C'];
     const r = `${city}当前天气：${weatherDesc}, 温度${tempC}摄氏度`;
-    console.log('查询天气结果: \n' + r);
+    console.log('查询天气结果: ' + r + '\n');
     return r;
   } catch (error) {}
 };
@@ -33,5 +33,24 @@ export const get_attraction = async (city: string, weather: string) => {
       searchDepth: 'basic',
       includeAnswer: true,
     });
-  } catch (error) {}
+
+    if (response.answer) {
+      return response.answer;
+    }
+
+    const format_results = [];
+
+    for (const r of response.results) {
+      const t = `- ${r.title}：${r.content}`;
+      format_results.push(t);
+    }
+
+    if (format_results.length == 0) {
+      return '抱歉，没有找到相关的旅游景点推荐';
+    }
+
+    return '根据搜索，为您找到以下的信息： \n' + format_results.join('\n');
+  } catch (error) {
+    return `错误：执行 Tavily 搜索时出现问题 - ${error}`;
+  }
 };

@@ -14,7 +14,7 @@ export class OpenAICompletionClient {
 
   async generate(prompt: string, systemPrompt: string) {
     try {
-      console.log(`开始调用大模型`);
+      console.log(`-------开始调用大模型-------`);
 
       const messages: OpenAI.ChatCompletionMessageParam[] = [
         { role: 'system', content: systemPrompt },
