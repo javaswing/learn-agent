@@ -23,7 +23,7 @@ async function main() {
   const BASE_URL = requireEnv('BASE_URL');
   const MODEL_ID = requireEnv('MODEL_ID');
 
-  console.log(`========= 初始化 OpenAI =========`);
+  console.log(`\n========= 初始化 OpenAI =========`);
   const llm = await new OpenAICompletionClient(API_KEY, BASE_URL, MODEL_ID);
 
   const prompt = `你好，请帮我查询一下今天上海的天气，然后根据天气推荐一个合适的旅游景点。`;
@@ -32,8 +32,9 @@ async function main() {
   const maxRange = 5;
 
   for (let index = 0; index < maxRange; index++) {
-    console.log(`--- 循环  ${index + 1} 次 ---\n`);
+    console.log(`\n--- 循环 ${index + 1} 次 ---`);
     const fullPrompt = promptHistory.join('\n');
+    console.log(`[PromptHistory] 当前历史:`, promptHistory);
     let output = await llm.generate(fullPrompt, AGENT_SYSTEM_PROMPT);
 
     let outputMatch = output?.match(
@@ -45,14 +46,15 @@ async function main() {
       let truncated = outputMatch[0].trim();
       if (truncated) {
         output = truncated;
-        console.log('已截断多余的 Thought-Action 对');
+        console.log('[截断] 已截断多余的 Thought-Action 对');
       }
     }
     if (!output) {
+      console.log('[终止] 未获取到模型输出，跳出循环。');
       break;
     }
 
-    console.log(`模型输出:\n${output}\n`);
+    console.log(`[模型输出]\n${output}\n`);
 
     promptHistory.push(output);
 
@@ -60,15 +62,15 @@ async function main() {
     const action_match = output?.match(/Action: (.*)/);
 
     if (!action_match) {
-      console.log('解析错误:模型输出中未找到 Action。');
+      console.log('[解析错误] 模型输出中未找到 Action。');
       break;
     }
     const action_str = action_match![1]!;
-    console.log(`action_str: ${action_str}` + '\n');
+    console.log(`[Action解析] action_str: ${action_str}`);
     if (action_str.startsWith('finish')) {
       const final_answer = action_str.match(/finish\(answer="(.*)"\)/)?.[1];
       if (final_answer) {
-        console.log(`任务完成，最终答案: ${final_answer}`);
+        console.log(`[任务完成] 最终答案: ${final_answer}`);
         break;
       }
     }
@@ -87,16 +89,20 @@ async function main() {
 
     let observation: string | undefined;
     if (tool_name && tool_name in available_tools) {
+      console.log(`[工具调用] ${tool_name} 参数:`, kwargs);
       observation =
         await available_tools[tool_name as keyof typeof available_tools](
           kwargs,
         );
+      console.log(`[工具返回] ${tool_name} 结果:`, observation);
     } else {
       observation = `错误:未定义的工具 '${tool_name}'`;
+      console.log(`[工具错误] 未定义的工具: ${tool_name}`);
     }
 
     const observation_str = `Observation: ${observation}`;
     promptHistory.push(observation_str);
+    console.log(`[Observation] ${observation_str}`);
   }
 }
 
