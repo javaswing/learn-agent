@@ -10,7 +10,7 @@ export const REACT_PROMPT_TEMPLATE = `
 Thought: 你的思考过程，用于分析问题、拆解任务和规划下一步行动
 Action: 你采取的行动必须是以下格式之一：
 - \`{{tool_name}}[{{tool_input}}]\`:调用一个可用工具
-- Finish[最终答案]: 当你认为已经获取最终答案时
+- \`Finish[最终答案]\`: 当你认为已经获取最终答案时
 
 
 现在请开始解决以下问题：

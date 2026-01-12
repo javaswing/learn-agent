@@ -15,7 +15,7 @@ function main() {
     toolsExecutor.registerTool("Search", searchDesc, search)    
 
     const reActAgent = new ReActAgent(llm, toolsExecutor);
-    const question = "Oppo最新的手机是哪一款？它的卖点是什么?"
+    const question = "小米最新的手机是哪一款？它的卖点是什么?"
 
     reActAgent.run(question)
 

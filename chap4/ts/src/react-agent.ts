@@ -50,7 +50,7 @@ export class ReActAgent {
         },
       ];
 
-    //   console.log(messages)
+      // console.log(messages)
 
       const responseTxt = await this.llmClient.think(messages);
 
@@ -59,6 +59,7 @@ export class ReActAgent {
         break;
       }
 
+      console.info(responseTxt)
       const {thought, action} = this._parseOutput(responseTxt);
 
       if(thought) {
@@ -70,9 +71,10 @@ export class ReActAgent {
         break;
       }
 
-    //   console.info('action', action)
-    //   console.log('action.startsWith', action.startsWith('Finish'))
-      if(action.startsWith('Finish')) {
+      // console.info('action', action)
+      // console.log('action.startsWith', action.startsWith('Finish'))
+      // console.log('action.startsWith', action.startsWith('`Finish'))
+      if(action.startsWith('`Finish')) {
         const finalAnswer = this._parseActionInput(action)
         console.log(`最终答案：${finalAnswer} \n`)
         return finalAnswer;
@@ -83,7 +85,7 @@ export class ReActAgent {
         continue;
       }
 
-      console.log(`行动: ${toolInput} ${toolInput}\n`)
+      console.log(`行动: ${toolName} ${toolInput}\n`)
 
       const toolFun = this.toolsExecutor.getTool(toolName)
       let observation = `错误： 未找到名为 '${toolName}' 的工具`
@@ -105,8 +107,8 @@ export class ReActAgent {
    * 解析 LLM 输出，提取 Thought 和 Action
    */
   private _parseOutput(text: string): { thought: string | null; action: string | null } {
-    const thoughtMatch = text.match(/Thought:(.*)/);
-    const actionMatch = text.match(/Action:(.*)/);
+    const thoughtMatch = text.match(/Thought: (.*)/);
+    const actionMatch = text.match(/Action: (.*)/);
     const thought = thoughtMatch?.[1]?.trim() ?? null;
     const action = actionMatch?.[1]?.trim() ?? null;
     return { thought, action };
@@ -128,6 +130,7 @@ export class ReActAgent {
    */
   private _parseActionInput(text: string): string | null {
     const inputMatch = text.match(/\w+\[(.*)\]/);
+    console.log(inputMatch)
     return inputMatch && typeof inputMatch[1] === 'string' ? inputMatch[1] : null;
   }
 }

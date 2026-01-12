@@ -11,7 +11,7 @@ export async function search(query: string): Promise<string> {
     if (!apiKey) {
       return '错误：SERPAPI_API_KEY没有定义在.env 文件中';
     }
-
+    
     const params = {
       engine: 'google',
       q: query,
