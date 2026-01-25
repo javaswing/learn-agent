@@ -1,6 +1,3 @@
-/**
- * 解析 LLM 输出，提取 Thought 和 Action
- */
 import { type ChatCompletionMessageParam } from 'openai/resources';
 import { HelloAgentsLLM } from './hello-agent-llm';
 import { formatPrompt, REACT_PROMPT_TEMPLATE } from './prompt';
@@ -70,10 +67,7 @@ export class ReActAgent {
         console.log('没有下一步Action, 流程终止')
         break;
       }
-
-      // console.info('action', action)
-      // console.log('action.startsWith', action.startsWith('Finish'))
-      // console.log('action.startsWith', action.startsWith('`Finish'))
+      
       if(action.startsWith('`Finish')) {
         const finalAnswer = this._parseActionInput(action)
         console.log(`最终答案：${finalAnswer} \n`)

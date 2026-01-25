@@ -1,3 +1,6 @@
+import { search } from "./tools";
+import * as dotenv from 'dotenv';
+
 export type Tools = {
   description: string;
   func: Function;
@@ -37,3 +40,28 @@ export class ToolsExecutor {
     return allTools.join('\n');
   }
 }
+
+
+function main() {
+  dotenv.config();
+  const executor = new ToolsExecutor();
+  executor.registerTool(
+    'Search',
+    '基于 SerApi实现的网页搜索工具',
+    search
+  );
+
+  const toolFunc = executor.getTool('Search');
+
+  console.log('可用工具列表:');
+  console.log(executor.getAvailableTools());
+
+  console.log(`\n 执行 Search 工具:`);
+  if (toolFunc) {
+    toolFunc('人工智能的未来是什么？').then((result: string) => {
+      console.log('搜索结果:');
+      console.log(result);
+    });
+  }
+}
+// main();
